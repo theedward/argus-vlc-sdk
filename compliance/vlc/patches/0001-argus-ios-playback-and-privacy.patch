@@ -156,7 +156,7 @@ index 138cdca..1edf441 100644
  ifdef WITH_OPTIMIZATION
  LIBXML2_CONF += -DLIBXML2_WITH_DEBUG=OFF
 diff --git a/extras/package/apple/build.conf b/extras/package/apple/build.conf
-index 8e53914..44130ac 100644
+index 8e53914..52804df 100644
 --- a/extras/package/apple/build.conf
 +++ b/extras/package/apple/build.conf
 @@ -1,3 +1,4 @@
@@ -184,10 +184,11 @@ index 8e53914..44130ac 100644
      --disable-kate
      --disable-caca
      --disable-gettext
-@@ -81,6 +82,10 @@ export VLC_CONTRIB_OPTIONS_MACOSX=(
+@@ -81,6 +82,11 @@ export VLC_CONTRIB_OPTIONS_MACOSX=(
  
  # Additional contrib bootstrap options for iOS
  export VLC_CONTRIB_OPTIONS_IOS=(
++    --disable-librist
 +    --disable-protobuf
 +    --disable-protoc
 +    --disable-opencv4
@@ -195,10 +196,11 @@ index 8e53914..44130ac 100644
      --disable-aom
  )
  
-@@ -161,6 +166,10 @@ export VLC_CONFIG_OPTIONS_MACOSX=()
+@@ -161,6 +167,11 @@ export VLC_CONFIG_OPTIONS_MACOSX=()
  
  # Additional configure options for iOS
  export VLC_CONFIG_OPTIONS_IOS=(
++    --disable-rist
 +    --disable-chromecast
 +    --disable-opencv
 +    --disable-zvbi

@@ -19,12 +19,12 @@ parser.add_argument('--record', type=Path, required=True)
 parser.add_argument('--inventory', type=Path, required=True)
 args = parser.parse_args()
 source = json.loads((args.source / 'source-record.json').read_text())
-if source['patchedTree'] != 'bc331fede6bf2654ad51cd58d087b752dfed008d':
+if source['patchedTree'] != '7187dcac49c81e8aa5a36e48f852facfae56b57d':
     raise SystemExit('Only the reviewed Argus iOS source tree can be packaged')
 inventory = json.loads(args.inventory.read_text())
 if inventory['unmappedLibraries'] or inventory['releaseBlockers']:
     raise SystemExit('Unreviewed/mixed-license component in final SDK')
-removed = {'zvbi', 'protobuf', 'opencv4', 'libarchive'}
+removed = {'zvbi', 'protobuf', 'opencv4', 'libarchive', 'librist'}
 if any(c['recipe'] in removed for c in inventory['components']):
     raise SystemExit('An excluded component remains installed')
 # Reject incompatible configurations instead of inferring licensing/privacy
