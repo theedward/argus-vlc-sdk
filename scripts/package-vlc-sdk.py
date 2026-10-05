@@ -110,7 +110,7 @@ for platform in info['AvailableLibraries']:
         '_vlc_entry__video_filter_deinterlace_libdeinterlace',
     }
     entries = {line.split()[-1] for line in symbols.splitlines() if line.split()}
-    if '_vlc_entry__access_output_livehttp' not in entries:
+    if '_vlc_entry__access_output_libaccess_output_livehttp' not in entries:
         raise SystemExit('Required HLS output writer is missing from the candidate')
     if entries & excluded_modules:
         raise SystemExit('GPL-only VLC plugin remains in the LGPL SDK')
