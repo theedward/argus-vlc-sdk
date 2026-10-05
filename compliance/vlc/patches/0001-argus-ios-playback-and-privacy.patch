@@ -38,10 +38,15 @@ index 0000000..36aec0d
 + 
 + int av_random_bytes(uint8_t* buf, size_t len)
 diff --git a/contrib/src/ffmpeg/rules.mak b/contrib/src/ffmpeg/rules.mak
-index 09bea09..6c2720d 100644
+index 09bea09..c06861d 100644
 --- a/contrib/src/ffmpeg/rules.mak
 +++ b/contrib/src/ffmpeg/rules.mak
-@@ -244,6 +244,7 @@ $(TARBALLS)/ffmpeg-$(FFMPEG_VERSION).tar.xz:
+@@ -1,3 +1,4 @@
++# Modified by Argus, 2026-10-05: apply Apple entropy source patch.
+ # FFmpeg
+ 
+ # FFMPEG_HASH=ec47a3b95f88fc3f820b900038ac439e4eb3fede
+@@ -244,6 +245,7 @@ $(TARBALLS)/ffmpeg-$(FFMPEG_VERSION).tar.xz:
  
  ffmpeg: ffmpeg-$(FFMPEG_VERSION).tar.xz .sum-ffmpeg
  	$(UNPACK)
@@ -50,10 +55,15 @@ index 09bea09..6c2720d 100644
  	$(APPLY) $(SRC)/ffmpeg/h264_early_SAR.patch
  	$(APPLY) $(SRC)/ffmpeg/0001-avcodec-dxva2-add-support-for-HEVC-RExt-DXVA-profile.patch
 diff --git a/contrib/src/freetype2/rules.mak b/contrib/src/freetype2/rules.mak
-index d4cfafa..b68fd1e 100644
+index d4cfafa..bf05b16 100644
 --- a/contrib/src/freetype2/rules.mak
 +++ b/contrib/src/freetype2/rules.mak
-@@ -28,7 +28,7 @@ freetype: freetype-$(FREETYPE2_VERSION).tar.xz .sum-freetype2
+@@ -1,3 +1,4 @@
++# Modified by Argus, 2026-10-05: use the stdio font reader on iOS.
+ # freetype2
+ 
+ FREETYPE2_VERSION := 2.14.3
+@@ -28,7 +29,7 @@ freetype: freetype-$(FREETYPE2_VERSION).tar.xz .sum-freetype2
  DEPS_freetype2 = zlib $(DEPS_zlib)
  
  FREETYPE_CONF := -Dpng=disabled -Dbzip2=disabled -Dharfbuzz=disabled \
@@ -86,10 +96,15 @@ index 0000000..baeb9a6
 +           _gcry_post_syscall ();
 +         }
 diff --git a/contrib/src/gcrypt/rules.mak b/contrib/src/gcrypt/rules.mak
-index 71e106b..77385e3 100644
+index 71e106b..d3da0b2 100644
 --- a/contrib/src/gcrypt/rules.mak
 +++ b/contrib/src/gcrypt/rules.mak
-@@ -27,6 +27,7 @@ gcrypt: libgcrypt-$(GCRYPT_VERSION).tar.bz2 .sum-gcrypt
+@@ -1,3 +1,4 @@
++# Modified by Argus, 2026-10-05: select the public Apple system RNG backend.
+ # GCRYPT
+ GCRYPT_VERSION := 1.12.2
+ GCRYPT_URL := $(GNUGPG)/libgcrypt/libgcrypt-$(GCRYPT_VERSION).tar.bz2
+@@ -27,6 +28,7 @@ gcrypt: libgcrypt-$(GCRYPT_VERSION).tar.bz2 .sum-gcrypt
  
  	# don't use getpid in UWP as it's not actually available
  	$(APPLY) $(SRC)/gcrypt/gcrypt-uwp-getpid.patch
@@ -97,7 +112,7 @@ index 71e106b..77385e3 100644
  	$(MOVE)
  
  DEPS_gcrypt = gpg-error $(DEPS_gpg-error)
-@@ -47,7 +48,7 @@ GCRYPT_CONF += --disable-asm --disable-padlock-support
+@@ -47,7 +49,7 @@ GCRYPT_CONF += --disable-asm --disable-padlock-support
  endif
  endif
  ifdef HAVE_DARWIN_OS
@@ -123,10 +138,15 @@ index 657ea45..783e5c5 100644
  	$(MESONCLEAN)
  	$(MESON) $(HARFBUZZ_CONF)
 diff --git a/contrib/src/libxml2/rules.mak b/contrib/src/libxml2/rules.mak
-index 138cdca..7980355 100644
+index 138cdca..1edf441 100644
 --- a/contrib/src/libxml2/rules.mak
 +++ b/contrib/src/libxml2/rules.mak
-@@ -28,7 +28,7 @@ LIBXML2_CONF = \
+@@ -1,3 +1,4 @@
++# Modified by Argus, 2026-10-05: disable XML catalogs.
+ # libxml2
+ 
+ LIBXML2_VERSION := 2.15.3
+@@ -28,7 +29,7 @@ LIBXML2_CONF = \
          -DLIBXML2_WITH_ICONV=OFF   \
          -DLIBXML2_WITH_REGEXPS=OFF \
          -DLIBXML2_WITH_TESTS=OFF \
@@ -136,10 +156,15 @@ index 138cdca..7980355 100644
  ifdef WITH_OPTIMIZATION
  LIBXML2_CONF += -DLIBXML2_WITH_DEBUG=OFF
 diff --git a/extras/package/apple/build.conf b/extras/package/apple/build.conf
-index 8e53914..4c19a2f 100644
+index 8e53914..44130ac 100644
 --- a/extras/package/apple/build.conf
 +++ b/extras/package/apple/build.conf
-@@ -13,8 +13,8 @@
+@@ -1,3 +1,4 @@
++# Modified by Argus, 2026-10-05: set iOS 17 minimum and disable unused components.
+ # Copyright (C) Marvin Scholz
+ #
+ # This is a configuration file with various
+@@ -13,8 +14,8 @@
  # macOS deployment target
  export VLC_DEPLOYMENT_TARGET_MACOSX="10.13"
  # iOS deployment target
@@ -150,7 +175,7 @@ index 8e53914..4c19a2f 100644
  # tvOS deployment target
  export VLC_DEPLOYMENT_TARGET_TVOS="11.0"
  export VLC_DEPLOYMENT_TARGET_TVOS_SIMULATOR="12.0"
-@@ -34,7 +34,7 @@ export VLC_CONTRIB_OPTIONS_BASE=(
+@@ -34,7 +35,7 @@ export VLC_CONTRIB_OPTIONS_BASE=(
      --enable-ad-clauses
      --disable-disc
      --disable-iconv
@@ -159,7 +184,7 @@ index 8e53914..4c19a2f 100644
      --disable-kate
      --disable-caca
      --disable-gettext
-@@ -81,6 +81,10 @@ export VLC_CONTRIB_OPTIONS_MACOSX=(
+@@ -81,6 +82,10 @@ export VLC_CONTRIB_OPTIONS_MACOSX=(
  
  # Additional contrib bootstrap options for iOS
  export VLC_CONTRIB_OPTIONS_IOS=(
@@ -170,7 +195,7 @@ index 8e53914..4c19a2f 100644
      --disable-aom
  )
  
-@@ -161,6 +165,10 @@ export VLC_CONFIG_OPTIONS_MACOSX=()
+@@ -161,6 +166,10 @@ export VLC_CONFIG_OPTIONS_MACOSX=()
  
  # Additional configure options for iOS
  export VLC_CONFIG_OPTIONS_IOS=(
@@ -182,7 +207,7 @@ index 8e53914..4c19a2f 100644
  )
  
 diff --git a/modules/access/file.c b/modules/access/file.c
-index 8d57fd3..027d8ae 100644
+index 8d57fd3..650cf90 100644
 --- a/modules/access/file.c
 +++ b/modules/access/file.c
 @@ -32,6 +32,9 @@
@@ -201,7 +226,7 @@ index 8d57fd3..027d8ae 100644
  {
 -#if defined(__APPLE__)
 +#if defined(__APPLE__) && TARGET_OS_IPHONE
-+    /* Argus iOS file inputs are sandboxed; HTTP inputs use their own cache.
++    /* Modified by Argus, 2026-10-05: iOS file inputs are sandboxed; HTTP inputs use their own cache.
 +     * Do not query disk metadata merely to choose the remote-file cache. */
 +    (void)fd;
 +    return false;
