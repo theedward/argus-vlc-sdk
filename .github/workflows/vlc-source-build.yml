@@ -1,0 +1,71 @@
+name: VLC source candidate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: vlc-source-candidate
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 180
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+      VLC_PATH: /opt/homebrew/opt/make/libexec/gnubin:/opt/homebrew/bin:/opt/homebrew/opt/gettext/bin
+      MAKE: /opt/homebrew/bin/gmake
+      MAKEFLAGS: -j3
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Verify toolchain and storage
+        run: |
+          set -eu
+          printf 'CODE_SIGNING_ALLOWED = NO\nCODE_SIGNING_REQUIRED = NO\nCODE_SIGN_IDENTITY =\n' > "$RUNNER_TEMP/vlc-unsigned.xcconfig"
+          printf 'XCODE_XCCONFIG_FILE=%s\n' "$RUNNER_TEMP/vlc-unsigned.xcconfig" >> "$GITHUB_ENV"
+          xcodebuild -version
+          python3 - <<'PYTHON'
+          import shutil
+          if shutil.disk_usage('.').free < 12 * 1024**3:
+              raise SystemExit('Source builder requires at least 12 GiB free')
+          PYTHON
+      - name: Prepare pinned sources
+        run: python3 scripts/prepare-vlc-source.py --cache "$RUNNER_TEMP/vlc-cache" --destination "$RUNNER_TEMP/vlc-source"
+      - name: Install build prerequisites
+        run: |
+          brew install make autoconf automake libtool pkg-config gettext cmake ninja
+          /opt/homebrew/bin/gmake --version
+          /opt/homebrew/bin/gmake --jobserver-style=fifo -j3 --eval='all:;@true'
+      - name: Compile arm64 iPhone and simulator candidate
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/vlc-source/VLCKit"
+          ./compileAndBuildVLCKit.sh -v -r -f -e "$RUNNER_TEMP/vlc-source/vlc" 2>&1 | tee "$RUNNER_TEMP/vlc-source-build.log"
+          python3 "$GITHUB_WORKSPACE/scripts/verify-vlc-candidate.py" build/iOS/VLCKit.xcframework
+      - name: Record exact build inputs and configurations
+        if: always()
+        run: python3 scripts/record-vlc-build.py --source "$RUNNER_TEMP/vlc-source" --output "$RUNNER_TEMP/vlc-record"
+      - name: Audit components and package reviewed SDK metadata
+        run: |
+          set -eu
+          python3 scripts/inventory-vlc.py --source "$RUNNER_TEMP/vlc-source" --record "$RUNNER_TEMP/vlc-record" --output "$RUNNER_TEMP/vlc-record/component-inventory.json"
+          python3 scripts/package-vlc-sdk.py --source "$RUNNER_TEMP/vlc-source" --record "$RUNNER_TEMP/vlc-record" --inventory "$RUNNER_TEMP/vlc-record/component-inventory.json"
+          python3 scripts/record-vlc-build.py --source "$RUNNER_TEMP/vlc-source" --output "$RUNNER_TEMP/vlc-record"
+      - name: Preserve complete corresponding source
+        run: python3 scripts/package-vlc-source.py --source "$RUNNER_TEMP/vlc-source" --record "$RUNNER_TEMP/vlc-record" --output "$RUNNER_TEMP/vlc-corresponding-source.tar.xz"
+      - name: Preserve candidate and review evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: vlc-source-candidate-${{ github.sha }}
+          retention-days: 14
+          compression-level: 0
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/vlc-record
+            ${{ runner.temp }}/vlc-source-build.log
+            ${{ runner.temp }}/vlc-source/source-record.json
+            ${{ runner.temp }}/vlc-source/VLCKit/build/iOS/VLCKit.xcframework
+            ${{ runner.temp }}/vlc-corresponding-source.tar.xz
+            ${{ runner.temp }}/corresponding-source-receipt.json

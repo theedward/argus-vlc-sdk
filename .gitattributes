@@ -1,0 +1,2 @@
+# Patch context preserves upstream whitespace and Makefile tabs.
+compliance/vlc/patches/*.patch -whitespace

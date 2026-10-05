@@ -1,0 +1,243 @@
+diff --git a/contrib/src/ffmpeg/0001-argus-apple-entropy.patch b/contrib/src/ffmpeg/0001-argus-apple-entropy.patch
+new file mode 100644
+index 0000000..36aec0d
+--- /dev/null
++++ b/contrib/src/ffmpeg/0001-argus-apple-entropy.patch
+@@ -0,0 +1,33 @@
++--- a/libavutil/random_seed.c
+++++ b/libavutil/random_seed.c
++@@ -19,6 +19,9 @@
++  */
++ 
++ #include "config.h"
+++#ifdef __APPLE__
+++#include <stdlib.h>
+++#endif
++ 
++ #if HAVE_UNISTD_H
++ #include <unistd.h>
++@@ -74,6 +77,12 @@
++ 
++ static uint32_t get_generic_seed(void)
++ {
+++#ifdef __APPLE__
+++    /* Argus iOS, 2026-10-05: entropy is not a use of the timing API. */
+++    uint32_t seed;
+++    arc4random_buf(&seed, sizeof(seed));
+++    return seed;
+++#else
++     uint64_t tmp[120/8];
++     struct AVSHA *sha = (void*)tmp;
++     clock_t last_t  = 0;
++@@ -154,6 +163,7 @@
++     av_sha_update(sha, (const uint8_t *)buffer, sizeof(buffer));
++     av_sha_final(sha, digest);
++     return AV_RB32(digest) + AV_RB32(digest + 16);
+++#endif
++ }
++ 
++ int av_random_bytes(uint8_t* buf, size_t len)
+diff --git a/contrib/src/ffmpeg/rules.mak b/contrib/src/ffmpeg/rules.mak
+index 09bea09..6c2720d 100644
+--- a/contrib/src/ffmpeg/rules.mak
++++ b/contrib/src/ffmpeg/rules.mak
+@@ -244,6 +244,7 @@ $(TARBALLS)/ffmpeg-$(FFMPEG_VERSION).tar.xz:
+ 
+ ffmpeg: ffmpeg-$(FFMPEG_VERSION).tar.xz .sum-ffmpeg
+ 	$(UNPACK)
++	$(APPLY) $(SRC)/ffmpeg/0001-argus-apple-entropy.patch
+ 	$(APPLY) $(SRC)/ffmpeg/dxva_vc1_crash.patch
+ 	$(APPLY) $(SRC)/ffmpeg/h264_early_SAR.patch
+ 	$(APPLY) $(SRC)/ffmpeg/0001-avcodec-dxva2-add-support-for-HEVC-RExt-DXVA-profile.patch
+diff --git a/contrib/src/freetype2/rules.mak b/contrib/src/freetype2/rules.mak
+index d4cfafa..b68fd1e 100644
+--- a/contrib/src/freetype2/rules.mak
++++ b/contrib/src/freetype2/rules.mak
+@@ -28,7 +28,7 @@ freetype: freetype-$(FREETYPE2_VERSION).tar.xz .sum-freetype2
+ DEPS_freetype2 = zlib $(DEPS_zlib)
+ 
+ FREETYPE_CONF := -Dpng=disabled -Dbzip2=disabled -Dharfbuzz=disabled \
+-                 -Dbrotli=disabled
++                 -Dbrotli=disabled -Dmmap=disabled
+ 
+ .freetype2: freetype crossfile.meson
+ ifndef AD_CLAUSES
+diff --git a/contrib/src/gcrypt/0009-argus-apple-system-random.patch b/contrib/src/gcrypt/0009-argus-apple-system-random.patch
+new file mode 100644
+index 0000000..baeb9a6
+--- /dev/null
++++ b/contrib/src/gcrypt/0009-argus-apple-system-random.patch
+@@ -0,0 +1,17 @@
++--- a/random/rndgetentropy.c
+++++ b/random/rndgetentropy.c
++@@ -102,7 +102,14 @@
++ #endif
++             {
++               nbytes = length < sizeof (buffer) ? length : sizeof (buffer);
+++#if defined(__APPLE__)
+++              /* Argus iOS, 2026-10-05: public Apple cryptographic system RNG.
+++               * Avoid device-file metadata queries in the legacy backend. */
+++              arc4random_buf (buffer, nbytes);
+++              ret = 0;
+++#else
++               ret = getentropy (buffer, nbytes);
+++#endif
++             }
++           _gcry_post_syscall ();
++         }
+diff --git a/contrib/src/gcrypt/rules.mak b/contrib/src/gcrypt/rules.mak
+index 71e106b..77385e3 100644
+--- a/contrib/src/gcrypt/rules.mak
++++ b/contrib/src/gcrypt/rules.mak
+@@ -27,6 +27,7 @@ gcrypt: libgcrypt-$(GCRYPT_VERSION).tar.bz2 .sum-gcrypt
+ 
+ 	# don't use getpid in UWP as it's not actually available
+ 	$(APPLY) $(SRC)/gcrypt/gcrypt-uwp-getpid.patch
++	$(APPLY) $(SRC)/gcrypt/0009-argus-apple-system-random.patch
+ 	$(MOVE)
+ 
+ DEPS_gcrypt = gpg-error $(DEPS_gpg-error)
+@@ -47,7 +48,7 @@ GCRYPT_CONF += --disable-asm --disable-padlock-support
+ endif
+ endif
+ ifdef HAVE_DARWIN_OS
+-GCRYPT_CONF += ac_cv_sys_symbol_underscore=yes
++GCRYPT_CONF += ac_cv_sys_symbol_underscore=yes ac_cv_func_getentropy=yes
+ endif
+ ifdef HAVE_ANDROID
+ ifeq ($(ANDROID_ABI), x86)
+diff --git a/contrib/src/harfbuzz/rules.mak b/contrib/src/harfbuzz/rules.mak
+index 657ea45..783e5c5 100644
+--- a/contrib/src/harfbuzz/rules.mak
++++ b/contrib/src/harfbuzz/rules.mak
+@@ -31,6 +31,11 @@ ifdef HAVE_DARWIN_OS
+ HARFBUZZ_CONF += -Dcoretext=enabled
+ endif
+ 
++# Argus iOS, 2026-10-05: preserve shaping and use the stdio font reader.
++ifdef HAVE_IOS
++HARFBUZZ_CONF += -Dcpp_args="$(CXXFLAGS) -DHB_NO_MMAP -DHB_NO_RESOURCE_FORK"
++endif
++
+ .harfbuzz: harfbuzz crossfile.meson
+ 	$(MESONCLEAN)
+ 	$(MESON) $(HARFBUZZ_CONF)
+diff --git a/contrib/src/libxml2/rules.mak b/contrib/src/libxml2/rules.mak
+index 138cdca..7980355 100644
+--- a/contrib/src/libxml2/rules.mak
++++ b/contrib/src/libxml2/rules.mak
+@@ -28,7 +28,7 @@ LIBXML2_CONF = \
+         -DLIBXML2_WITH_ICONV=OFF   \
+         -DLIBXML2_WITH_REGEXPS=OFF \
+         -DLIBXML2_WITH_TESTS=OFF \
+-        -DLIBXML2_WITH_PROGRAMS=OFF
++        -DLIBXML2_WITH_PROGRAMS=OFF -DLIBXML2_WITH_CATALOG=OFF
+ 
+ ifdef WITH_OPTIMIZATION
+ LIBXML2_CONF += -DLIBXML2_WITH_DEBUG=OFF
+diff --git a/extras/package/apple/build.conf b/extras/package/apple/build.conf
+index 8e53914..4c19a2f 100644
+--- a/extras/package/apple/build.conf
++++ b/extras/package/apple/build.conf
+@@ -13,8 +13,8 @@
+ # macOS deployment target
+ export VLC_DEPLOYMENT_TARGET_MACOSX="10.13"
+ # iOS deployment target
+-export VLC_DEPLOYMENT_TARGET_IOS="9.0"
+-export VLC_DEPLOYMENT_TARGET_IOS_SIMULATOR="12.0"
++export VLC_DEPLOYMENT_TARGET_IOS="17.0"
++export VLC_DEPLOYMENT_TARGET_IOS_SIMULATOR="17.0"
+ # tvOS deployment target
+ export VLC_DEPLOYMENT_TARGET_TVOS="11.0"
+ export VLC_DEPLOYMENT_TARGET_TVOS_SIMULATOR="12.0"
+@@ -34,7 +34,7 @@ export VLC_CONTRIB_OPTIONS_BASE=(
+     --enable-ad-clauses
+     --disable-disc
+     --disable-iconv
+-    --enable-zvbi
++    --disable-zvbi
+     --disable-kate
+     --disable-caca
+     --disable-gettext
+@@ -81,6 +81,10 @@ export VLC_CONTRIB_OPTIONS_MACOSX=(
+ 
+ # Additional contrib bootstrap options for iOS
+ export VLC_CONTRIB_OPTIONS_IOS=(
++    --disable-protobuf
++    --disable-protoc
++    --disable-opencv4
++    --disable-libarchive
+     --disable-aom
+ )
+ 
+@@ -161,6 +165,10 @@ export VLC_CONFIG_OPTIONS_MACOSX=()
+ 
+ # Additional configure options for iOS
+ export VLC_CONFIG_OPTIONS_IOS=(
++    --disable-chromecast
++    --disable-opencv
++    --disable-zvbi
++    --disable-archive
+     --disable-upnp-server
+ )
+ 
+diff --git a/modules/access/file.c b/modules/access/file.c
+index 8d57fd3..027d8ae 100644
+--- a/modules/access/file.c
++++ b/modules/access/file.c
+@@ -32,6 +32,9 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <fcntl.h>
++#ifdef __APPLE__
++# include <TargetConditionals.h>
++#endif
+ #ifdef HAVE_FSTATVFS
+ #   include <sys/statvfs.h>
+ #   if defined (HAVE_SYS_MOUNT_H)
+@@ -71,7 +74,12 @@ typedef struct
+ #if !defined (_WIN32) && !defined (__OS2__)
+ static bool IsRemote (int fd)
+ {
+-#if defined(__APPLE__)
++#if defined(__APPLE__) && TARGET_OS_IPHONE
++    /* Argus iOS file inputs are sandboxed; HTTP inputs use their own cache.
++     * Do not query disk metadata merely to choose the remote-file cache. */
++    (void)fd;
++    return false;
++#elif defined(__APPLE__)
+     /* This has to preceed the general fstatvfs implmentation below,
+      * as even though Darwin has fstatvfs, it does not expose the
+      * MNT_LOCAL in the statvfs.f_flag field.
+diff --git a/modules/misc/xml/libxml.c b/modules/misc/xml/libxml.c
+index dfe7a6d..0ba0e83 100644
+--- a/modules/misc/xml/libxml.c
++++ b/modules/misc/xml/libxml.c
+@@ -40,16 +40,27 @@
+ static void CatalogLoad( xml_t *p_xml, const char *psz_filename )
+ {
+     VLC_UNUSED(p_xml);
++#ifdef LIBXML_CATALOG_ENABLED
+     if( !psz_filename ) xmlInitializeCatalog();
+     else xmlLoadCatalog( psz_filename );
++#else
++    /* Argus iOS, 2026-10-05: catalogs are excluded from this build. */
++    VLC_UNUSED(psz_filename);
++#endif
+ }
+ 
+ static void CatalogAdd( xml_t *p_xml, const char *psz_arg1,
+                           const char *psz_arg2, const char *psz_filename )
+ {
+     VLC_UNUSED(p_xml);
++#ifdef LIBXML_CATALOG_ENABLED
+     xmlCatalogAdd( (unsigned char*)psz_arg1, (unsigned char*)psz_arg2,
+         (unsigned char*)psz_filename );
++#else
++    VLC_UNUSED(psz_arg1);
++    VLC_UNUSED(psz_arg2);
++    VLC_UNUSED(psz_filename);
++#endif
+ }
+ 
+ static vlc_mutex_t lock = VLC_STATIC_MUTEX;

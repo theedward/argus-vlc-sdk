@@ -1,0 +1,466 @@
+[
+  {
+    "recipe": "live555",
+    "sourcePrefix": "live.",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libBasicUsageEnvironment.a",
+      "libUsageEnvironment.a",
+      "libliveMedia.a",
+      "libgroupsock.a"
+    ]
+  },
+  {
+    "recipe": "flac",
+    "sourcePrefix": "flac-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libFLAC.a"
+    ]
+  },
+  {
+    "recipe": "glslang",
+    "sourcePrefix": "glslang-",
+    "license": "BSD-3-Clause AND MIT AND Apache-2.0",
+    "libraries": [
+      "libGenericCodeGen.a",
+      "libHLSL.a",
+      "libMachineIndependent.a",
+      "libOGLCompiler.a",
+      "libOSDependent.a",
+      "libSPIRV.a",
+      "libSPVRemapper.a",
+      "libglslang-default-resource-limits.a",
+      "libglslang.a"
+    ]
+  },
+  {
+    "recipe": "libarchive",
+    "sourcePrefix": "libarchive-",
+    "license": "BSD-2-Clause",
+    "libraries": [
+      "libarchive.a"
+    ]
+  },
+  {
+    "recipe": "libaribcaption",
+    "sourcePrefix": "libaribcaption-",
+    "license": "MIT",
+    "libraries": [
+      "libaribcaption.a"
+    ]
+  },
+  {
+    "recipe": "ass",
+    "sourcePrefix": "libass-",
+    "license": "ISC",
+    "libraries": [
+      "libass.a"
+    ]
+  },
+  {
+    "recipe": "ffmpeg",
+    "sourcePrefix": "ffmpeg-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libavcodec.a",
+      "libavformat.a",
+      "libavutil.a",
+      "libswscale.a"
+    ]
+  },
+  {
+    "recipe": "dav1d",
+    "sourcePrefix": "dav1d-",
+    "license": "BSD-2-Clause",
+    "libraries": [
+      "libdav1d.a"
+    ]
+  },
+  {
+    "recipe": "libdsm",
+    "sourcePrefix": "libdsm-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libdsm.a"
+    ]
+  },
+  {
+    "recipe": "dvbpsi",
+    "sourcePrefix": "libdvbpsi-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libdvbpsi.a"
+    ]
+  },
+  {
+    "recipe": "ebml",
+    "sourcePrefix": "libebml-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libebml.a"
+    ]
+  },
+  {
+    "recipe": "libebur128",
+    "sourcePrefix": "libebur128-",
+    "license": "MIT",
+    "libraries": [
+      "libebur128.a"
+    ]
+  },
+  {
+    "recipe": "fluidlite",
+    "sourcePrefix": "fluidlite-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libfluidlite.a"
+    ]
+  },
+  {
+    "recipe": "freetype2",
+    "sourcePrefix": "freetype-",
+    "license": "FTL",
+    "libraries": [
+      "libfreetype.a"
+    ]
+  },
+  {
+    "recipe": "fribidi",
+    "sourcePrefix": "fribidi-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libfribidi.a"
+    ]
+  },
+  {
+    "recipe": "gcrypt",
+    "sourcePrefix": "libgcrypt-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libgcrypt.a"
+    ]
+  },
+  {
+    "recipe": "gpg-error",
+    "sourcePrefix": "libgpg-error-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libgpg-error.a"
+    ]
+  },
+  {
+    "recipe": "gsm",
+    "sourcePrefix": "gsm-",
+    "license": "LicenseRef-GSM",
+    "libraries": [
+      "libgsm.a"
+    ]
+  },
+  {
+    "recipe": "harfbuzz",
+    "sourcePrefix": "harfbuzz-",
+    "license": "MIT",
+    "libraries": [
+      "libharfbuzz-gpu.a",
+      "libharfbuzz-raster.a",
+      "libharfbuzz-subset.a",
+      "libharfbuzz-vector.a",
+      "libharfbuzz.a"
+    ]
+  },
+  {
+    "recipe": "upnp",
+    "sourcePrefix": "pupnp-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libixml.a",
+      "libupnp.a"
+    ]
+  },
+  {
+    "recipe": "jpeg",
+    "sourcePrefix": "libjpeg-turbo-",
+    "license": "IJG AND BSD-3-Clause AND Zlib",
+    "libraries": [
+      "libjpeg.a"
+    ]
+  },
+  {
+    "recipe": "matroska",
+    "sourcePrefix": "libmatroska-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libmatroska.a"
+    ]
+  },
+  {
+    "recipe": "modplug",
+    "sourcePrefix": "libmodplug-",
+    "license": "LicenseRef-Public-Domain",
+    "libraries": [
+      "libmodplug.a"
+    ]
+  },
+  {
+    "recipe": "lame",
+    "sourcePrefix": "lame-",
+    "license": "LGPL-2.0-or-later",
+    "libraries": [
+      "libmp3lame.a"
+    ]
+  },
+  {
+    "recipe": "mpg123",
+    "sourcePrefix": "mpg123-",
+    "license": "LGPL-2.1",
+    "libraries": [
+      "libmpg123.a",
+      "libsyn123.a"
+    ]
+  },
+  {
+    "recipe": "mysofa",
+    "sourcePrefix": "libmysofa-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libmysofa.a"
+    ]
+  },
+  {
+    "recipe": "nfs",
+    "sourcePrefix": "libnfs-",
+    "license": "LGPL-2.1-or-later AND BSD-2-Clause",
+    "libraries": [
+      "libnfs.a"
+    ]
+  },
+  {
+    "recipe": "libnoidea",
+    "sourcePrefix": "libnoidea-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libnoidea.a"
+    ]
+  },
+  {
+    "recipe": "openapv",
+    "sourcePrefix": "openapv-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "liboapv.a"
+    ]
+  },
+  {
+    "recipe": "ogg",
+    "sourcePrefix": "libogg-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libogg.a"
+    ]
+  },
+  {
+    "recipe": "opencv4",
+    "sourcePrefix": "opencv-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libopencv_calib3d.a",
+      "libopencv_core.a",
+      "libopencv_features2d.a",
+      "libopencv_flann.a",
+      "libopencv_imgcodecs.a",
+      "libopencv_imgproc.a",
+      "libopencv_objdetect.a"
+    ]
+  },
+  {
+    "recipe": "openjpeg",
+    "sourcePrefix": "openjpeg-",
+    "license": "BSD-2-Clause",
+    "libraries": [
+      "libopenjp2.a"
+    ]
+  },
+  {
+    "recipe": "opus",
+    "sourcePrefix": "opus-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libopus.a"
+    ]
+  },
+  {
+    "recipe": "libplacebo",
+    "sourcePrefix": "libplacebo-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libplacebo.a"
+    ]
+  },
+  {
+    "recipe": "png",
+    "sourcePrefix": "libpng-",
+    "license": "Libpng-2.0",
+    "libraries": [
+      "libpng.a",
+      "libpng16.a"
+    ]
+  },
+  {
+    "recipe": "protobuf",
+    "sourcePrefix": "protobuf-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libprotobuf-lite.a",
+      "libprotobuf.a"
+    ]
+  },
+  {
+    "recipe": "librist",
+    "sourcePrefix": "librist-",
+    "license": "BSD-2-Clause",
+    "libraries": [
+      "librist.a"
+    ]
+  },
+  {
+    "recipe": "rnnoise",
+    "sourcePrefix": "rnnoise-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "librnnoise.a"
+    ]
+  },
+  {
+    "recipe": "shout",
+    "sourcePrefix": "libshout-",
+    "license": "LGPL-2.0-or-later",
+    "libraries": [
+      "libshout.a"
+    ]
+  },
+  {
+    "recipe": "smb2",
+    "sourcePrefix": "libsmb2-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libsmb2.a"
+    ]
+  },
+  {
+    "recipe": "soxr",
+    "sourcePrefix": "soxr-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libsoxr.a"
+    ]
+  },
+  {
+    "recipe": "spatialaudio",
+    "sourcePrefix": "spatialaudio-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libspatialaudio.a"
+    ]
+  },
+  {
+    "recipe": "speex",
+    "sourcePrefix": "speex-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libspeex.a"
+    ]
+  },
+  {
+    "recipe": "speexdsp",
+    "sourcePrefix": "speexdsp-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libspeexdsp.a"
+    ]
+  },
+  {
+    "recipe": "ssh2",
+    "sourcePrefix": "libssh2-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libssh2.a"
+    ]
+  },
+  {
+    "recipe": "taglib",
+    "sourcePrefix": "taglib-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libtag.a"
+    ]
+  },
+  {
+    "recipe": "libtasn1",
+    "sourcePrefix": "libtasn1-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libtasn1.a"
+    ]
+  },
+  {
+    "recipe": "theora",
+    "sourcePrefix": "libtheora-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libtheora.a",
+      "libtheoradec.a",
+      "libtheoraenc.a"
+    ]
+  },
+  {
+    "recipe": "twolame",
+    "sourcePrefix": "twolame-",
+    "license": "LGPL-2.1-or-later",
+    "libraries": [
+      "libtwolame.a"
+    ]
+  },
+  {
+    "recipe": "vorbis",
+    "sourcePrefix": "libvorbis-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libvorbis.a",
+      "libvorbisenc.a",
+      "libvorbisfile.a"
+    ]
+  },
+  {
+    "recipe": "vpx",
+    "sourcePrefix": "libvpx-",
+    "license": "BSD-3-Clause",
+    "libraries": [
+      "libvpx.a"
+    ]
+  },
+  {
+    "recipe": "libxml2",
+    "sourcePrefix": "libxml2-",
+    "license": "MIT",
+    "libraries": [
+      "libxml2.a"
+    ]
+  },
+  {
+    "recipe": "zlib",
+    "sourcePrefix": "zlib-",
+    "license": "Zlib",
+    "libraries": [
+      "libz.a"
+    ]
+  },
+  {
+    "recipe": "zvbi",
+    "sourcePrefix": "zvbi-",
+    "license": "LicenseRef-Mixed-LGPL-GPL-REMOVE",
+    "libraries": [
+      "libzvbi.a"
+    ]
+  }
+]
