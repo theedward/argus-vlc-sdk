@@ -19,7 +19,7 @@ parser.add_argument('--record', type=Path, required=True)
 parser.add_argument('--inventory', type=Path, required=True)
 args = parser.parse_args()
 source = json.loads((args.source / 'source-record.json').read_text())
-if source['patchedTree'] != '7187dcac49c81e8aa5a36e48f852facfae56b57d':
+if source['patchedTree'] != '274abefaed23ffdc17d81b07298fcd070373c2bb':
     raise SystemExit('Only the reviewed Argus iOS source tree can be packaged')
 inventory = json.loads(args.inventory.read_text())
 if inventory['unmappedLibraries'] or inventory['releaseBlockers']:
@@ -99,6 +99,21 @@ for platform in info['AvailableLibraries']:
         raise SystemExit('Unexplained disk API remains in final framework')
     if 'protobuf' in subprocess.check_output(['nm', '-g', str(framework / 'VLCKit')], text=True).lower():
         raise SystemExit('Excluded Protobuf code remains linked')
+    # The contrib GPL switch does not govern VLC's own plugins. Inspect
+    # local symbols too: plugin entry points are not exported by VLCKit.
+    symbols = subprocess.check_output(['nm', str(framework / 'VLCKit')], text=True)
+    excluded_modules = {
+        '_vlc_entry__control_dummy', '_vlc_entry__logger_file',
+        '_vlc_entry__logger_syslog', '_vlc_entry__services_discovery_libsap',
+        '_vlc_entry__stream_out_libstream_out_rtp',
+        '_vlc_entry__video_filter_rotate',
+        '_vlc_entry__video_filter_deinterlace_libdeinterlace',
+    }
+    entries = {line.split()[-1] for line in symbols.splitlines() if line.split()}
+    if entries & excluded_modules:
+        raise SystemExit('GPL-only VLC plugin remains in the LGPL SDK')
+    if any('rist' in name for name in entries if name.startswith('_vlc_entry__')):
+        raise SystemExit('Excluded RIST transport remains linked')
     shutil.copyfile(root / 'compliance/vlc/PrivacyInfo.xcprivacy', framework / 'PrivacyInfo.xcprivacy')
     bundle = framework / 'ArgusVLCNotices.bundle'
     bundle.mkdir(exist_ok=True)
@@ -110,7 +125,8 @@ for platform in info['AvailableLibraries']:
     (bundle / 'BuildProvenance.json').write_text(json.dumps(source, indent=2) + '\n')
     report.append({'slice': platform['LibraryIdentifier'], 'notices': len(catalog),
                    'privacyManifestSHA256': hashlib.sha256((framework / 'PrivacyInfo.xcprivacy').read_bytes()).hexdigest(),
-                   'diskAPIImports': []})
+                   'diskAPIImports': [], 'excludedGPLModuleSymbols': sorted(excluded_modules),
+                   'activeModuleSymbols': sorted(name for name in entries if name.startswith('_vlc_entry__'))})
 args.record.mkdir(parents=True, exist_ok=True)
 (args.record / 'sdk-compliance-packaging.json').write_text(json.dumps(report, indent=2) + '\n')
 print(json.dumps(report))

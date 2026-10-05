@@ -30,7 +30,7 @@ record['toolchain'] = {'xcode': version(['xcodebuild', '-version']), 'clang': ve
     'brewPackages': version(['brew', 'list', '--versions'])}
 vlc = args.source / 'vlc'
 configurations = []
-for name in ['config.mak', 'config.h', 'config.status']:
+for name in ['config.mak', 'config.h', 'config.status', 'static-libs-list', 'static-module-list.c']:
     for path in sorted(vlc.rglob(name)):
         if not path.is_file() or '.git' in path.parts: continue
         relative = path.relative_to(args.source)

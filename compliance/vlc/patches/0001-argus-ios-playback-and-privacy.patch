@@ -156,7 +156,7 @@ index 138cdca..1edf441 100644
  ifdef WITH_OPTIMIZATION
  LIBXML2_CONF += -DLIBXML2_WITH_DEBUG=OFF
 diff --git a/extras/package/apple/build.conf b/extras/package/apple/build.conf
-index 8e53914..52804df 100644
+index 8e53914..f0cbc25 100644
 --- a/extras/package/apple/build.conf
 +++ b/extras/package/apple/build.conf
 @@ -1,3 +1,4 @@
@@ -208,6 +208,25 @@ index 8e53914..52804df 100644
      --disable-upnp-server
  )
  
+@@ -253,7 +264,17 @@ export VLC_MODULE_REMOVAL_LIST_BASE=(
+ export VLC_MODULE_REMOVAL_LIST_MACOSX=()
+ 
+ # Additional modules to remove for iOS
+-export VLC_MODULE_REMOVAL_LIST_IOS=()
++# Modified by Argus, 2026-10-05: exclude GPL-only modules from the LGPL SDK.
++# Remove plugin archives before the wrapper combines them into the framework.
++export VLC_MODULE_REMOVAL_LIST_IOS=(
++    dummy
++    file_logger
++    syslog
++    sap
++    stream_out_rtp
++    rotate
++    deinterlace
++)
+ 
+ # Additional modules to remove for tvOS
+ export VLC_MODULE_REMOVAL_LIST_TVOS=()
 diff --git a/modules/access/file.c b/modules/access/file.c
 index 8d57fd3..650cf90 100644
 --- a/modules/access/file.c
