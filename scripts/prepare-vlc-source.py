@@ -78,13 +78,13 @@ argus_patches = sorted((root / 'compliance/vlc/patches').glob('*.patch'))
 if len(argus_patches) != 1:
     raise SystemExit('Expected the reviewed Argus iOS source overlay')
 for patch in argus_patches:
-    if hashlib.sha256(patch.read_bytes()).hexdigest() != '8c1dafc9a1bdbb6ddf7512fbdcd8d6cbba07c821d94cae38b4bda7f40f82abb1':
+    if hashlib.sha256(patch.read_bytes()).hexdigest() != '3499ac2baf9c62344004dd298f43bb79ce2259705479d333814f68b5d9017157':
         raise SystemExit('Unreviewed Argus source overlay')
     git('apply', '--check', str(patch.resolve()), cwd=vlc)
     git('apply', str(patch.resolve()), cwd=vlc)
 git('add', '.', cwd=vlc)
 git('commit', '-q', '-m', 'Argus iOS playback and privacy configuration', cwd=vlc)
-if git('rev-parse', 'HEAD^{tree}', cwd=vlc) != '274abefaed23ffdc17d81b07298fcd070373c2bb':
+if git('rev-parse', 'HEAD^{tree}', cwd=vlc) != '911aa4f783310e0791254b747abede299c55ad0d':
     raise SystemExit('Argus source tree differs from reviewed overlay')
 # Xcode's header and static-library references remain relative to libvlc/vlc,
 # even when the shell wrapper receives an external source path.

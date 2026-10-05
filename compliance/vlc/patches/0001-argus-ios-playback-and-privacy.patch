@@ -156,7 +156,7 @@ index 138cdca..1edf441 100644
  ifdef WITH_OPTIMIZATION
  LIBXML2_CONF += -DLIBXML2_WITH_DEBUG=OFF
 diff --git a/extras/package/apple/build.conf b/extras/package/apple/build.conf
-index 8e53914..f0cbc25 100644
+index 8e53914..f9919d5 100644
 --- a/extras/package/apple/build.conf
 +++ b/extras/package/apple/build.conf
 @@ -1,3 +1,4 @@
@@ -208,7 +208,15 @@ index 8e53914..f0cbc25 100644
      --disable-upnp-server
  )
  
-@@ -253,7 +264,17 @@ export VLC_MODULE_REMOVAL_LIST_BASE=(
+@@ -246,14 +257,24 @@ export VLC_MODULE_REMOVAL_LIST_BASE=(
+     demuxdump
+     fingerprinter
+     access_output_udp
+-    access_output_livehttp
++    # Modified by Argus, 2026-10-05: retain LGPL livehttp for HLS packaging.
+ )
+ 
+ # Additional modules to remove for macOS
  export VLC_MODULE_REMOVAL_LIST_MACOSX=()
  
  # Additional modules to remove for iOS

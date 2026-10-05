@@ -19,7 +19,7 @@ parser.add_argument('--record', type=Path, required=True)
 parser.add_argument('--inventory', type=Path, required=True)
 args = parser.parse_args()
 source = json.loads((args.source / 'source-record.json').read_text())
-if source['patchedTree'] != '274abefaed23ffdc17d81b07298fcd070373c2bb':
+if source['patchedTree'] != '911aa4f783310e0791254b747abede299c55ad0d':
     raise SystemExit('Only the reviewed Argus iOS source tree can be packaged')
 inventory = json.loads(args.inventory.read_text())
 if inventory['unmappedLibraries'] or inventory['releaseBlockers']:
@@ -110,6 +110,8 @@ for platform in info['AvailableLibraries']:
         '_vlc_entry__video_filter_deinterlace_libdeinterlace',
     }
     entries = {line.split()[-1] for line in symbols.splitlines() if line.split()}
+    if '_vlc_entry__access_output_livehttp' not in entries:
+        raise SystemExit('Required HLS output writer is missing from the candidate')
     if entries & excluded_modules:
         raise SystemExit('GPL-only VLC plugin remains in the LGPL SDK')
     if any('rist' in name for name in entries if name.startswith('_vlc_entry__')):
