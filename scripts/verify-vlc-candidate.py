@@ -27,6 +27,12 @@ for item in slices:
     legacy_device = variant == 'device' and not actual and 'cmd LC_VERSION_MIN_IPHONEOS' in build
     if actual != [expected] and not legacy_device:
         raise SystemExit('Binary platform does not match metadata')
+    header = framework / 'Headers/VLCDrawable.h'
+    if not header.is_file() or 'setAutomaticPictureInPictureEnabled:' not in header.read_text():
+        raise SystemExit('Missing public runtime PiP policy API')
+    selectors = subprocess.check_output(['strings', str(binary)], text=True)
+    if 'setAutomaticPictureInPictureEnabled:' not in selectors:
+        raise SystemExit('Missing compiled runtime PiP policy selector')
     if not (framework / 'Headers/VLCMediaPlayer.h').is_file():
         raise SystemExit('Missing public playback header')
 if platforms != {'device', 'simulator'}:

@@ -35,3 +35,18 @@ notices and the corresponding source package. No warranty is provided.
 
 VLC and VideoLAN are trademarks of VideoLAN. This is an Argus-maintained build,
 not an official VideoLAN release.
+
+## Automatic picture in picture policy
+
+The Argus source overlay adds the optional public method
+`setAutomaticPictureInPictureEnabled:` to the PiP window controller protocol.
+On iOS it updates Apple's automatic inline-entry property on the main thread,
+without restarting playback or presenting a window. Main-thread callers receive
+an immediate update; off-main callers are queued. Closing a controller disables
+automatic entry, and a queued update after teardown is harmless. Clients still
+own preference handling and stopping an existing PiP window.
+
+The wrapper header and VLC implementation are separately checksum-pinned.
+`python3 scripts/test-pip-policy.py PATH_TO_PREPARED_SOURCE` checks policy dispatch,
+teardown and public-header compilation for both iOS platforms. This does not
+prove automatic PiP on a phone; the built SDK and app must be tested separately.

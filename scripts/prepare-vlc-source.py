@@ -75,17 +75,27 @@ if git('rev-parse', 'HEAD^{tree}', cwd=vlc) != '9cb4e084a5e41ba0f7037c209884d881
 # Apply the reviewed Argus iOS privacy/component overlay after verifying the upstream tree.
 root = Path(__file__).resolve().parents[1]
 argus_patches = sorted((root / 'compliance/vlc/patches').glob('*.patch'))
-if len(argus_patches) != 1:
-    raise SystemExit('Expected the reviewed Argus iOS source overlay')
+overlay_pins = {
+    '0001-argus-ios-playback-and-privacy.patch': '3499ac2baf9c62344004dd298f43bb79ce2259705479d333814f68b5d9017157',
+    '0002-automatic-pip-policy.patch': '6cfbfd230dd095f450b4520db772d832e5f068dcd29c5d008e91b6554b8c631e',
+}
+if {p.name for p in argus_patches} != set(overlay_pins):
+    raise SystemExit('Expected the reviewed Argus source overlays')
 for patch in argus_patches:
-    if hashlib.sha256(patch.read_bytes()).hexdigest() != '3499ac2baf9c62344004dd298f43bb79ce2259705479d333814f68b5d9017157':
+    if hashlib.sha256(patch.read_bytes()).hexdigest() != overlay_pins[patch.name]:
         raise SystemExit('Unreviewed Argus source overlay')
     git('apply', '--check', str(patch.resolve()), cwd=vlc)
     git('apply', str(patch.resolve()), cwd=vlc)
 git('add', '.', cwd=vlc)
 git('commit', '-q', '-m', 'Argus iOS playback and privacy configuration', cwd=vlc)
-if git('rev-parse', 'HEAD^{tree}', cwd=vlc) != '911aa4f783310e0791254b747abede299c55ad0d':
+if git('rev-parse', 'HEAD^{tree}', cwd=vlc) != '3e1c3f6228d7591ee10664462a44dcdabdf438ce':
     raise SystemExit('Argus source tree differs from reviewed overlay')
+# Expose the same optional API through the wrapper's installed public header.
+wrapper_patch = root / 'compliance/vlc/wrapper-patches/0001-automatic-pip-policy.patch'
+if hashlib.sha256(wrapper_patch.read_bytes()).hexdigest() != 'ffeaa36de858d3d3e7461e64cae65be371ad920c8cee0433ec8c7b0b0d57121b':
+    raise SystemExit('Unreviewed wrapper PiP API overlay')
+git('apply', '--check', str(wrapper_patch.resolve()), cwd=wrapper)
+git('apply', str(wrapper_patch.resolve()), cwd=wrapper)
 # Xcode's header and static-library references remain relative to libvlc/vlc,
 # even when the shell wrapper receives an external source path.
 (wrapper / 'libvlc/vlc').symlink_to('../../vlc', target_is_directory=True)
@@ -115,6 +125,8 @@ report = {'wrapperArchiveSHA256': PINS[archive.name], 'wrapperCommit': WRAPPER, 
         'modifiedSHA256': hashlib.sha256(build_script.read_bytes()).hexdigest(),
         'changes': ['iOS simulator arm64 only', 'omit Intel simulator compilation', 'iOS minimum 17.0 matching Argus'],
         'sourceLink': 'VLCKit/libvlc/vlc -> ../../vlc'},
+    'wrapperHeaderOverlay': {'name': wrapper_patch.name, 'sha256': hashlib.sha256(wrapper_patch.read_bytes()).hexdigest(),
+        'headerSHA256': hashlib.sha256((wrapper / 'Headers/Public/Video/VLCDrawable.h').read_bytes()).hexdigest()},
     'buildCommand': './compileAndBuildVLCKit.sh -v -r -f -e ../vlc',
     'state': 'source prepared; binary not built or selected',
     'nightlyReproductionClaimed': False, 'distributionReady': False}

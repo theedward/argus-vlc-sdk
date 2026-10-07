@@ -1,0 +1,15 @@
+--- a/Headers/Public/Video/VLCDrawable.h
++++ b/Headers/Public/Video/VLCDrawable.h
+@@ -83,6 +83,12 @@
+ 
+ /// Must be called each time media info is updated or playback state has changed
+ - (void)invalidatePlaybackState;
++
++@optional
++/// Argus extension: update automatic inline-to-background PiP without replacing
++/// the decoder or drawable. Call on the main thread for immediate application.
++/// Does not start/stop PiP; disabling entry leaves an existing window unchanged.
++- (void)setAutomaticPictureInPictureEnabled:(BOOL)enabled;
+ @end
+ 
+ /**

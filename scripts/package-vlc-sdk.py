@@ -19,7 +19,7 @@ parser.add_argument('--record', type=Path, required=True)
 parser.add_argument('--inventory', type=Path, required=True)
 args = parser.parse_args()
 source = json.loads((args.source / 'source-record.json').read_text())
-if source['patchedTree'] != '911aa4f783310e0791254b747abede299c55ad0d':
+if source['patchedTree'] != '3e1c3f6228d7591ee10664462a44dcdabdf438ce':
     raise SystemExit('Only the reviewed Argus iOS source tree can be packaged')
 inventory = json.loads(args.inventory.read_text())
 if inventory['unmappedLibraries'] or inventory['releaseBlockers']:

@@ -32,6 +32,8 @@ jobs:
           PYTHON
       - name: Prepare pinned sources
         run: python3 scripts/prepare-vlc-source.py --cache "$RUNNER_TEMP/vlc-cache" --destination "$RUNNER_TEMP/vlc-source"
+      - name: Verify runtime PiP policy API
+        run: python3 scripts/test-pip-policy.py "$RUNNER_TEMP/vlc-source"
       - name: Install build prerequisites
         run: |
           brew install make autoconf automake libtool pkg-config gettext cmake ninja
