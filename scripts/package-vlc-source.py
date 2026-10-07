@@ -66,7 +66,7 @@ with tarfile.open(args.output, 'w:xz', preset=3) as tar:
     tar.add(args.source / 'source-record.json', arcname='source-record.json', recursive=False)
     for name in ('prepare-vlc-source.py', 'verify-vlc-candidate.py',
                  'record-vlc-build.py', 'inventory-vlc.py',
-                 'package-vlc-sdk.py', 'package-vlc-source.py'):
+                 'package-vlc-sdk.py', 'package-vlc-source.py', 'test-pip-policy.py'):
         tar.add(root / 'scripts' / name, arcname='scripts/' + name, recursive=False)
     tar.add(root / '.github/workflows/vlc-source-build.yml',
             arcname='.github/workflows/vlc-source-build.yml', recursive=False)

@@ -16,10 +16,21 @@ index 0b0b6ee..e2c8a8d 100644
  
  /**
 diff --git a/modules/video_output/apple/VLCPictureInPictureController.m b/modules/video_output/apple/VLCPictureInPictureController.m
-index ff3b7f9..0c1aa7c 100644
+index ff3b7f9..ba813a7 100644
 --- a/modules/video_output/apple/VLCPictureInPictureController.m
 +++ b/modules/video_output/apple/VLCPictureInPictureController.m
-@@ -115,11 +115,31 @@ - (void)prepare:(AVSampleBufferDisplayLayer *)layer {
+@@ -104,7 +104,9 @@ - (void)prepare:(AVSampleBufferDisplayLayer *)layer {
+         avPipController.canStartPictureInPictureAutomaticallyFromInline = YES;
+     }
+ #endif
+-    _avPipController = avPipController;
++    @synchronized (self) {
++        _avPipController = avPipController;
++    }
+ 
+ 
+     [_avPipController addObserver:self
+@@ -115,15 +117,39 @@ - (void)prepare:(AVSampleBufferDisplayLayer *)layer {
      _drawable.pictureInPictureReady(self);
  }
  
@@ -29,8 +40,10 @@ index ff3b7f9..0c1aa7c 100644
 +    void (^applyPolicy)(void) = ^{
 +        // Fetch the live controller on main, so a queued update after close is
 +        // a no-op rather than re-enabling a detached controller.
-+        AVPictureInPictureController *controller =
-+            (AVPictureInPictureController *)self->_avPipController;
++        AVPictureInPictureController *controller;
++        @synchronized (self) {
++            controller = (AVPictureInPictureController *)self->_avPipController;
++        }
 +        controller.canStartPictureInPictureAutomaticallyFromInline = enabled;
 +    };
 +    if ([NSThread isMainThread])
@@ -41,8 +54,13 @@ index ff3b7f9..0c1aa7c 100644
 +}
 +
  - (void)close {
-     AVPictureInPictureController *avPipController =
-         (AVPictureInPictureController *)_avPipController;
+-    AVPictureInPictureController *avPipController =
+-        (AVPictureInPictureController *)_avPipController;
++    AVPictureInPictureController *avPipController;
++    @synchronized (self) {
++        avPipController = (AVPictureInPictureController *)_avPipController;
++        _avPipController = nil;
++    }
      NSObject *observer = self;
      dispatch_async(dispatch_get_main_queue(),^{
 +#if TARGET_OS_IOS
@@ -51,3 +69,7 @@ index ff3b7f9..0c1aa7c 100644
          avPipController.contentSource = nil;
          [avPipController removeObserver:observer forKeyPath:@"isPictureInPicturePossible"];
      });
+-    _avPipController = nil;
+ }
+ 
+ - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object

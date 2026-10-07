@@ -77,7 +77,7 @@ root = Path(__file__).resolve().parents[1]
 argus_patches = sorted((root / 'compliance/vlc/patches').glob('*.patch'))
 overlay_pins = {
     '0001-argus-ios-playback-and-privacy.patch': '3499ac2baf9c62344004dd298f43bb79ce2259705479d333814f68b5d9017157',
-    '0002-automatic-pip-policy.patch': '6cfbfd230dd095f450b4520db772d832e5f068dcd29c5d008e91b6554b8c631e',
+    '0002-automatic-pip-policy.patch': 'bdb3ba2af33b197ddcf898c3d6329e63b379429eb3aebe16cdbba1951db78efe',
 }
 if {p.name for p in argus_patches} != set(overlay_pins):
     raise SystemExit('Expected the reviewed Argus source overlays')
@@ -88,7 +88,7 @@ for patch in argus_patches:
     git('apply', str(patch.resolve()), cwd=vlc)
 git('add', '.', cwd=vlc)
 git('commit', '-q', '-m', 'Argus iOS playback and privacy configuration', cwd=vlc)
-if git('rev-parse', 'HEAD^{tree}', cwd=vlc) != '3e1c3f6228d7591ee10664462a44dcdabdf438ce':
+if git('rev-parse', 'HEAD^{tree}', cwd=vlc) != '50d9ce9f4fe618a83bb3288af2debf3a6892a855':
     raise SystemExit('Argus source tree differs from reviewed overlay')
 # Expose the same optional API through the wrapper's installed public header.
 wrapper_patch = root / 'compliance/vlc/wrapper-patches/0001-automatic-pip-policy.patch'
